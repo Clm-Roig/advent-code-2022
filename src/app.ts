@@ -16,7 +16,7 @@ app.get("/", (req: Request, res: Response) => {
     availableSolutions.push(file);
   });
   res.render("home", {
-    subject: "C. Roig - Advent Code 2022",
+    subject: "C. Roig - Advent of Code 2022",
     availableSolutions,
   });
 });
