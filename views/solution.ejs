@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <%- include('./head', {subject: 'Day ' + dayNb}); %>
+  </head>
+
+  <body>
+    <div class="container mt-2">
+      <h1>My day <%= dayNb %> solution</h1>
+
+      <% if(errorMessage) { %>
+      <div class="alert alert-danger" role="alert"><%= errorMessage %></div>
+      <% }%> <% if (useTestData) { %>
+      <p class="font-weight-bold text-danger">
+        Using test data
+        <a class="btn btn-primary" href="/days/<%= dayNb %>"
+          >Show solution with real data</a
+        >
+      </p>
+      <% } else { %>
+      <p class="font-weight-bold">
+        Using real data
+        <a class="btn btn-primary" href="/days/<%= dayNb %>?useTestData"
+          >Show solution with test data</a
+        >
+      </p>
+      <% }%>
+      <p>
+        <a
+          href="https://adventofcode.com/2022/day/<%= dayNb %>"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Statement</a
+        >
+      </p>
+
+      <p>
+        Code (TypeScript) available on
+        <a
+          href="https://github.com/Clm-Roig/advent-code-2022/tree/main/src/solutions/<%= dayNb %>/index.ts"
+          target="_blank"
+          rel="noopener noreferrer"
+          >my GitHub repository</a
+        >
+      </p>
+      <h2>First part</h2>
+      <p><%= firstPartSolution %></p>
+
+      <h2>Second part</h2>
+      <p><%= secondPartSolution %></p>
+
+      <hr />
+
+      <a class="btn btn-link" href="/">⬅ Go back to home page</a>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <%- include('./head', {subject: subject}); %>
+  </head>
+
+  <body>
+    <div class="container mt-2">
+      <header>
+        <h1>
+          <a
+            href="https://clm-roig.github.io"
+            target="_blank"
+            rel="noopener noreferrer"
+            >Clément ROIG</a
+          >
+          Advent Code 2022
+        </h1>
+      </header>
+      <section>
+        <p>
+          See
+          <a
+            href="https://adventofcode.com/"
+            target="blank"
+            rel="noopener noreferrer"
+            >https://adventofcode.com/</a
+          >
+          for more information about this event.
+        </p>
+        <ul class="list-group">
+          <%availableSolutions.map( solution=> {%>
+          <li class="list-group-item">
+            <h3>Day <%= solution %></h3>
+            <p>
+              <a
+                href="https://adventofcode.com/2022/day/<%= solution %>"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Statement</a
+              >
+              <span>-</span>
+              <a href="/days/<%= solution %>?useTestData"
+                >My solution (test data)</a
+              >
+              <span>-</span>
+              <a href="/days/<%= solution %>">My solution (real data)</a>
+            </p>
+          </li>
+          <%})%>
+        </ul>
+      </section>
+    </div>
+  </body>
+</html>

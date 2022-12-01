@@ -1,1 +1,9 @@
-# advent-code-2022
+# Advent Code 2022
+
+## Pre-requisites
+
+Node.js
+
+### Start server
+
+`npm start`
