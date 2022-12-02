@@ -46,29 +46,69 @@ const POINTS_PER_OUTCOME = {
   loss: 0,
 };
 
-// If newValue is greater than the min value of threeMaxValues, replace it.
-const getPoints = (hisChoice: ITS_CHOICES, myChoice: MY_CHOICES) => {
+const getPointsPart1 = (hisChoice: ITS_CHOICES, myChoice: MY_CHOICES) => {
   let res = getPointsPerChoice(myChoice);
   switch (hisChoice) {
     case ITS_CHOICES.A: {
-      if (myChoice === MY_CHOICES.X) res += POINTS_PER_OUTCOME.draw;
+      if (myChoice === MY_CHOICES.X) res += getPointsPerChoice(MY_CHOICES.Z);
       else if (myChoice === MY_CHOICES.Y) res += POINTS_PER_OUTCOME.win;
       else res += POINTS_PER_OUTCOME.loss;
       break;
     }
     case ITS_CHOICES.B: {
-      if (myChoice === MY_CHOICES.Y) res += POINTS_PER_OUTCOME.draw;
+      if (myChoice === MY_CHOICES.Y) res += getPointsPerChoice(MY_CHOICES.Z);
       else if (myChoice === MY_CHOICES.Z) res += POINTS_PER_OUTCOME.win;
       else res += POINTS_PER_OUTCOME.loss;
       break;
     }
     case ITS_CHOICES.C: {
-      if (myChoice === MY_CHOICES.Z) res += POINTS_PER_OUTCOME.draw;
+      if (myChoice === MY_CHOICES.Z) res += getPointsPerChoice(MY_CHOICES.Z);
       else if (myChoice === MY_CHOICES.X) res += POINTS_PER_OUTCOME.win;
       else res += POINTS_PER_OUTCOME.loss;
       break;
     }
   }
+  return res;
+};
+
+const getPointsPart2 = (hisChoice: ITS_CHOICES, myChoice: MY_CHOICES) => {
+  let res = 0;
+  switch (myChoice) {
+    case MY_CHOICES.X:
+      res += POINTS_PER_OUTCOME.loss;
+      break;
+    case MY_CHOICES.Y:
+      res += POINTS_PER_OUTCOME.draw;
+      break;
+    case MY_CHOICES.Z:
+      res += POINTS_PER_OUTCOME.win;
+      break;
+  }
+
+  switch (hisChoice) {
+    case ITS_CHOICES.A: {
+      if (myChoice === MY_CHOICES.X) res += getPointsPerChoice(MY_CHOICES.Z);
+      else if (myChoice === MY_CHOICES.Y)
+        res += getPointsPerChoice(MY_CHOICES.X);
+      else res += getPointsPerChoice(MY_CHOICES.Y);
+      break;
+    }
+    case ITS_CHOICES.B: {
+      if (myChoice === MY_CHOICES.X) res += getPointsPerChoice(MY_CHOICES.X);
+      else if (myChoice === MY_CHOICES.Y)
+        res += getPointsPerChoice(MY_CHOICES.Y);
+      else res += getPointsPerChoice(MY_CHOICES.Z);
+      break;
+    }
+    case ITS_CHOICES.C: {
+      if (myChoice === MY_CHOICES.X) res += getPointsPerChoice(MY_CHOICES.Y);
+      else if (myChoice === MY_CHOICES.Y)
+        res += getPointsPerChoice(MY_CHOICES.Z);
+      else res += getPointsPerChoice(MY_CHOICES.X);
+      break;
+    }
+  }
+
   return res;
 };
 
@@ -89,22 +129,25 @@ module.exports = async function solution(res: Response, useTestData: boolean) {
   file.on("close", function () {
     let errorMessage, firstPartSolution, secondPartSolution;
 
-    let currentTotal = 0;
+    let totalPart1 = 0;
+    let totalPart2 = 0;
     for (const round of dataArray) {
       const [hisChoice, myChoice] = round.split(" ");
       if (hisChoice && myChoice) {
-        currentTotal += getPoints(
+        totalPart1 += getPointsPart1(
+          getItsChoice(hisChoice),
+          getMyChoice(myChoice)
+        );
+        totalPart2 += getPointsPart2(
           getItsChoice(hisChoice),
           getMyChoice(myChoice)
         );
       }
     }
 
-    // Handle latest iteration (there is no line break at the end of the file)
-
     // Format solutions, render view
-    firstPartSolution = currentTotal;
-    secondPartSolution = "...";
+    firstPartSolution = totalPart1;
+    secondPartSolution = totalPart2;
     res.render("solution", {
       dayNb: 2,
       errorMessage,
