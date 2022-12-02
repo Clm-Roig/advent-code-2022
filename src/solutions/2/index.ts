@@ -6,13 +6,68 @@ import readline from "readline";
 const dataPath = path.join(__dirname, "input.txt");
 const testDataPath = path.join(__dirname, "test-input.txt");
 
+enum ITS_CHOICES {
+  A,
+  B,
+  C,
+}
+enum MY_CHOICES {
+  X,
+  Y,
+  Z,
+}
+
+const getItsChoice = (choice: string) => {
+  if (choice === "A") return ITS_CHOICES.A;
+  if (choice === "B") return ITS_CHOICES.B;
+  return ITS_CHOICES.C;
+};
+
+const getMyChoice = (choice: string) => {
+  if (choice === "X") return MY_CHOICES.X;
+  if (choice === "Y") return MY_CHOICES.Y;
+  return MY_CHOICES.Z;
+};
+
+const getPointsPerChoice = (choice: MY_CHOICES) => {
+  switch (choice) {
+    case MY_CHOICES.X:
+      return 1;
+    case MY_CHOICES.Y:
+      return 2;
+    case MY_CHOICES.Z:
+      return 3;
+  }
+};
+
+const POINTS_PER_OUTCOME = {
+  win: 6,
+  draw: 3,
+  loss: 0,
+};
+
 // If newValue is greater than the min value of threeMaxValues, replace it.
-const checkAndReplace = (threeMaxValues: number[], newValue: number) => {
-  let res = threeMaxValues;
-  const minValue = Math.min.apply(Math, threeMaxValues);
-  const minIdx = threeMaxValues.findIndex((v) => v === minValue);
-  if (minValue < newValue) {
-    res = [...threeMaxValues.filter((v, idx) => idx !== minIdx), newValue];
+const getPoints = (hisChoice: ITS_CHOICES, myChoice: MY_CHOICES) => {
+  let res = getPointsPerChoice(myChoice);
+  switch (hisChoice) {
+    case ITS_CHOICES.A: {
+      if (myChoice === MY_CHOICES.X) res += POINTS_PER_OUTCOME.draw;
+      else if (myChoice === MY_CHOICES.Y) res += POINTS_PER_OUTCOME.win;
+      else res += POINTS_PER_OUTCOME.loss;
+      break;
+    }
+    case ITS_CHOICES.B: {
+      if (myChoice === MY_CHOICES.Y) res += POINTS_PER_OUTCOME.draw;
+      else if (myChoice === MY_CHOICES.Z) res += POINTS_PER_OUTCOME.win;
+      else res += POINTS_PER_OUTCOME.loss;
+      break;
+    }
+    case ITS_CHOICES.C: {
+      if (myChoice === MY_CHOICES.Z) res += POINTS_PER_OUTCOME.draw;
+      else if (myChoice === MY_CHOICES.X) res += POINTS_PER_OUTCOME.win;
+      else res += POINTS_PER_OUTCOME.loss;
+      break;
+    }
   }
   return res;
 };
@@ -33,29 +88,25 @@ module.exports = async function solution(res: Response, useTestData: boolean) {
   // Process data
   file.on("close", function () {
     let errorMessage, firstPartSolution, secondPartSolution;
-    let threeMaxValues: number[] = [0, 0, 0];
 
-    // Aggregate calories by elf, keep only the 3 max
     let currentTotal = 0;
-    for (const quantity of dataArray) {
-      if (quantity === "") {
-        threeMaxValues = checkAndReplace(threeMaxValues, currentTotal);
-        currentTotal = 0;
-      } else {
-        currentTotal += Number(quantity);
+    for (const round of dataArray) {
+      const [hisChoice, myChoice] = round.split(" ");
+      if (hisChoice && myChoice) {
+        currentTotal += getPoints(
+          getItsChoice(hisChoice),
+          getMyChoice(myChoice)
+        );
       }
     }
 
     // Handle latest iteration (there is no line break at the end of the file)
-    if (currentTotal !== 0) {
-      threeMaxValues = checkAndReplace(threeMaxValues, currentTotal);
-    }
 
     // Format solutions, render view
-    firstPartSolution = Math.max.apply(Math, threeMaxValues) + "";
-    secondPartSolution = threeMaxValues.reduce((total, v) => total + v, 0);
+    firstPartSolution = currentTotal;
+    secondPartSolution = "...";
     res.render("solution", {
-      dayNb: 1,
+      dayNb: 2,
       errorMessage,
       firstPartSolution,
       secondPartSolution,
