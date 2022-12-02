@@ -2,6 +2,7 @@ import { Response } from "express";
 import path from "path";
 import { createReadStream, readFile } from "fs";
 import readline from "readline";
+import getAvailableSolutions from "../../getAvailableSolutions";
 
 const dataPath = path.join(__dirname, "input.txt");
 const testDataPath = path.join(__dirname, "test-input.txt");
@@ -55,6 +56,7 @@ module.exports = async function solution(res: Response, useTestData: boolean) {
     firstPartSolution = Math.max.apply(Math, threeMaxValues) + "";
     secondPartSolution = threeMaxValues.reduce((total, v) => total + v, 0);
     res.render("solution", {
+      availableSolutions: getAvailableSolutions(),
       dayNb: 1,
       errorMessage,
       firstPartSolution,

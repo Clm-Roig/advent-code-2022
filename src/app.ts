@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
-import { readdirSync } from "fs";
 import path from "path";
 import express from "express";
+import getAvailableSolutions from "./getAvailableSolutions";
 
 const solutionFolder = path.join(__dirname, "solutions");
 
@@ -11,13 +11,10 @@ app.set("views", "./views");
 app.set("view engine", "ejs");
 
 app.get("/", (req: Request, res: Response) => {
-  let availableSolutions: string[] = [];
-  readdirSync(solutionFolder).forEach((file) => {
-    availableSolutions.push(file);
-  });
   res.render("home", {
+    dayNb: 0,
     subject: "C. Roig - Advent of Code 2022",
-    availableSolutions,
+    availableSolutions: getAvailableSolutions(),
   });
 });
 
@@ -30,6 +27,11 @@ app.get("/days/:id", async (req: Request, res: Response) => {
   } else {
     res.send("Solution not available (yet)!");
   }
+});
+
+app.get("*", function (req, res) {
+  res.status(404);
+  res.render("404");
 });
 
 app.listen(port, () => {
