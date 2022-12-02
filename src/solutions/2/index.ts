@@ -6,64 +6,40 @@ import readline from "readline";
 const dataPath = path.join(__dirname, "input.txt");
 const testDataPath = path.join(__dirname, "test-input.txt");
 
-enum ITS_CHOICES {
-  A,
-  B,
-  C,
-}
-enum MY_CHOICES {
-  X,
-  Y,
-  Z,
-}
+type HisChoice = "A" | "B" | "C";
+type MyChoice = "X" | "Y" | "Z";
 
-const getItsChoice = (choice: string) => {
-  if (choice === "A") return ITS_CHOICES.A;
-  if (choice === "B") return ITS_CHOICES.B;
-  return ITS_CHOICES.C;
-};
-
-const getMyChoice = (choice: string) => {
-  if (choice === "X") return MY_CHOICES.X;
-  if (choice === "Y") return MY_CHOICES.Y;
-  return MY_CHOICES.Z;
-};
-
-const getPointsPerChoice = (choice: MY_CHOICES) => {
-  switch (choice) {
-    case MY_CHOICES.X:
-      return 1;
-    case MY_CHOICES.Y:
-      return 2;
-    case MY_CHOICES.Z:
-      return 3;
-  }
+const POINTS_PER_CHOICE: Record<MyChoice, number> = {
+  X: 1,
+  Y: 2,
+  Z: 3,
 };
 
 const POINTS_PER_OUTCOME = {
-  win: 6,
-  draw: 3,
   loss: 0,
+  draw: 3,
+  win: 6,
 };
 
-const getPointsPart1 = (hisChoice: ITS_CHOICES, myChoice: MY_CHOICES) => {
-  let res = getPointsPerChoice(myChoice);
+// X, Y or Z is what I play (Rock, Paper Scissor)
+const getPointsPart1 = (hisChoice: HisChoice, myChoice: MyChoice) => {
+  let res = POINTS_PER_CHOICE[myChoice];
   switch (hisChoice) {
-    case ITS_CHOICES.A: {
-      if (myChoice === MY_CHOICES.X) res += getPointsPerChoice(MY_CHOICES.Z);
-      else if (myChoice === MY_CHOICES.Y) res += POINTS_PER_OUTCOME.win;
+    case "A": {
+      if (myChoice === "X") res += POINTS_PER_OUTCOME.draw;
+      else if (myChoice === "Y") res += POINTS_PER_OUTCOME.win;
       else res += POINTS_PER_OUTCOME.loss;
       break;
     }
-    case ITS_CHOICES.B: {
-      if (myChoice === MY_CHOICES.Y) res += getPointsPerChoice(MY_CHOICES.Z);
-      else if (myChoice === MY_CHOICES.Z) res += POINTS_PER_OUTCOME.win;
+    case "B": {
+      if (myChoice === "Y") res += POINTS_PER_OUTCOME.draw;
+      else if (myChoice === "Z") res += POINTS_PER_OUTCOME.win;
       else res += POINTS_PER_OUTCOME.loss;
       break;
     }
-    case ITS_CHOICES.C: {
-      if (myChoice === MY_CHOICES.Z) res += getPointsPerChoice(MY_CHOICES.Z);
-      else if (myChoice === MY_CHOICES.X) res += POINTS_PER_OUTCOME.win;
+    case "C": {
+      if (myChoice === "Z") res += POINTS_PER_OUTCOME.draw;
+      else if (myChoice === "X") res += POINTS_PER_OUTCOME.win;
       else res += POINTS_PER_OUTCOME.loss;
       break;
     }
@@ -71,40 +47,32 @@ const getPointsPart1 = (hisChoice: ITS_CHOICES, myChoice: MY_CHOICES) => {
   return res;
 };
 
-const getPointsPart2 = (hisChoice: ITS_CHOICES, myChoice: MY_CHOICES) => {
-  let res = 0;
-  switch (myChoice) {
-    case MY_CHOICES.X:
-      res += POINTS_PER_OUTCOME.loss;
-      break;
-    case MY_CHOICES.Y:
-      res += POINTS_PER_OUTCOME.draw;
-      break;
-    case MY_CHOICES.Z:
-      res += POINTS_PER_OUTCOME.win;
-      break;
-  }
+// X, Y or Z is the desired outcome (loss, draw, win)
+const getPointsPart2 = (hisChoice: HisChoice, myChoice: MyChoice) => {
+  let res =
+    myChoice === "X"
+      ? POINTS_PER_OUTCOME.loss
+      : myChoice === "Y"
+      ? POINTS_PER_OUTCOME.draw
+      : POINTS_PER_OUTCOME.win;
 
   switch (hisChoice) {
-    case ITS_CHOICES.A: {
-      if (myChoice === MY_CHOICES.X) res += getPointsPerChoice(MY_CHOICES.Z);
-      else if (myChoice === MY_CHOICES.Y)
-        res += getPointsPerChoice(MY_CHOICES.X);
-      else res += getPointsPerChoice(MY_CHOICES.Y);
+    case "A": {
+      if (myChoice === "X") res += POINTS_PER_CHOICE["Z"];
+      else if (myChoice === "Y") res += POINTS_PER_CHOICE["X"];
+      else res += POINTS_PER_CHOICE["Y"];
       break;
     }
-    case ITS_CHOICES.B: {
-      if (myChoice === MY_CHOICES.X) res += getPointsPerChoice(MY_CHOICES.X);
-      else if (myChoice === MY_CHOICES.Y)
-        res += getPointsPerChoice(MY_CHOICES.Y);
-      else res += getPointsPerChoice(MY_CHOICES.Z);
+    case "B": {
+      if (myChoice === "X") res += POINTS_PER_CHOICE["X"];
+      else if (myChoice === "Y") res += POINTS_PER_CHOICE["Y"];
+      else res += POINTS_PER_CHOICE["Z"];
       break;
     }
-    case ITS_CHOICES.C: {
-      if (myChoice === MY_CHOICES.X) res += getPointsPerChoice(MY_CHOICES.Y);
-      else if (myChoice === MY_CHOICES.Y)
-        res += getPointsPerChoice(MY_CHOICES.Z);
-      else res += getPointsPerChoice(MY_CHOICES.X);
+    case "C": {
+      if (myChoice === "X") res += POINTS_PER_CHOICE["Y"];
+      else if (myChoice === "Y") res += POINTS_PER_CHOICE["Z"];
+      else res += POINTS_PER_CHOICE["X"];
       break;
     }
   }
@@ -135,12 +103,12 @@ module.exports = async function solution(res: Response, useTestData: boolean) {
       const [hisChoice, myChoice] = round.split(" ");
       if (hisChoice && myChoice) {
         totalPart1 += getPointsPart1(
-          getItsChoice(hisChoice),
-          getMyChoice(myChoice)
+          hisChoice as HisChoice,
+          myChoice as MyChoice
         );
         totalPart2 += getPointsPart2(
-          getItsChoice(hisChoice),
-          getMyChoice(myChoice)
+          hisChoice as HisChoice,
+          myChoice as MyChoice
         );
       }
     }
