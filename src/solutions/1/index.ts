@@ -1,11 +1,6 @@
 import { Response } from "express";
-import path from "path";
-import { createReadStream, readFile } from "fs";
-import readline from "readline";
 import getAvailableSolutions from "../../getAvailableSolutions";
-
-const dataPath = path.join(__dirname, "input.txt");
-const testDataPath = path.join(__dirname, "test-input.txt");
+import { parseFile } from "../utils";
 
 // If newValue is greater than the min value of threeMaxValues, replace it.
 const checkAndReplace = (threeMaxValues: number[], newValue: number) => {
@@ -19,20 +14,7 @@ const checkAndReplace = (threeMaxValues: number[], newValue: number) => {
 };
 
 module.exports = async function solution(res: Response, useTestData: boolean) {
-  // Read file and store it in an array
-  const filePath = useTestData ? testDataPath : dataPath;
-  const file = readline.createInterface({
-    input: createReadStream(filePath),
-    output: process.stdout,
-    terminal: false,
-  });
-  let dataArray: string[] = [];
-  file.on("line", (line) => {
-    dataArray.push(line);
-  });
-
-  // Process data
-  file.on("close", function () {
+  parseFile(useTestData, __dirname, (dataArray) => {
     let errorMessage, firstPartSolution, secondPartSolution;
     let threeMaxValues: number[] = [0, 0, 0];
 

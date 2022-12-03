@@ -1,11 +1,8 @@
 import { Response } from "express";
-import path from "path";
-import { createReadStream, readFile } from "fs";
-import readline from "readline";
 import getAvailableSolutions from "../../getAvailableSolutions";
+import { parseFile } from "../utils";
 
-const dataPath = path.join(__dirname, "input.txt");
-const testDataPath = path.join(__dirname, "test-input.txt");
+let errorMessage: string;
 
 const getCharPriority = (char: String): number => {
   let res = 0;
@@ -27,7 +24,7 @@ const getCharPriority = (char: String): number => {
 };
 
 // Part 2 algo
-function getBadges(dataArray: string[], errorMessage: any) {
+function getBadges(dataArray: string[]) {
   let badges = [];
   let i = 0;
   let groupIdx = 0;
@@ -52,7 +49,7 @@ function getBadges(dataArray: string[], errorMessage: any) {
       badges.push(commonChars[0]);
     }
   }
-  return { badges, errorMessage };
+  return badges;
 }
 
 // Part 1 algo
@@ -76,21 +73,8 @@ function getItemAppearingInBothComparment(
 }
 
 module.exports = async function solution(res: Response, useTestData: boolean) {
-  // Read file and store it in an array
-  const filePath = useTestData ? testDataPath : dataPath;
-  const file = readline.createInterface({
-    input: createReadStream(filePath),
-    output: process.stdout,
-    terminal: false,
-  });
-  let dataArray: string[] = [];
-  file.on("line", (line) => {
-    dataArray.push(line);
-  });
-
-  // Process data
-  file.on("close", function () {
-    let errorMessage, firstPartSolution, secondPartSolution;
+  parseFile(useTestData, __dirname, (dataArray) => {
+    let firstPartSolution, secondPartSolution;
     let itemsInBoth = [];
 
     // Part 1
@@ -106,8 +90,7 @@ module.exports = async function solution(res: Response, useTestData: boolean) {
     }
 
     // Part 2
-    let badges = [];
-    ({ badges, errorMessage } = getBadges(dataArray, errorMessage));
+    let badges = getBadges(dataArray);
 
     // Format solutions, render view
     firstPartSolution = itemsInBoth.reduce(

@@ -1,11 +1,6 @@
 import { Response } from "express";
-import path from "path";
-import { createReadStream, readFile } from "fs";
-import readline from "readline";
 import getAvailableSolutions from "../../getAvailableSolutions";
-
-const dataPath = path.join(__dirname, "input.txt");
-const testDataPath = path.join(__dirname, "test-input.txt");
+import { parseFile } from "../utils";
 
 type HisChoice = "A" | "B" | "C";
 type MyChoice = "X" | "Y" | "Z";
@@ -82,20 +77,7 @@ const getPointsPart2 = (hisChoice: HisChoice, myChoice: MyChoice) => {
 };
 
 module.exports = async function solution(res: Response, useTestData: boolean) {
-  // Read file and store it in an array
-  const filePath = useTestData ? testDataPath : dataPath;
-  const file = readline.createInterface({
-    input: createReadStream(filePath),
-    output: process.stdout,
-    terminal: false,
-  });
-  let dataArray: string[] = [];
-  file.on("line", (line) => {
-    dataArray.push(line);
-  });
-
-  // Process data
-  file.on("close", function () {
+  parseFile(useTestData, __dirname, (dataArray) => {
     let errorMessage, firstPartSolution, secondPartSolution;
 
     let totalPart1 = 0;
