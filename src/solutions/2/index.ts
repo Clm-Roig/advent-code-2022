@@ -2,6 +2,8 @@ import { Response } from "express";
 import getAvailableSolutions from "../../getAvailableSolutions";
 import { parseFile } from "../utils";
 
+let errorMessage: string;
+
 type HisChoice = "A" | "B" | "C";
 type MyChoice = "X" | "Y" | "Z";
 
@@ -76,36 +78,40 @@ const getPointsPart2 = (hisChoice: HisChoice, myChoice: MyChoice) => {
   return res;
 };
 
-module.exports = async function solution(res: Response, useTestData: boolean) {
-  parseFile(useTestData, __dirname, (dataArray) => {
-    let errorMessage, firstPartSolution, secondPartSolution;
-
-    let totalPart1 = 0;
-    let totalPart2 = 0;
-    for (const round of dataArray) {
+module.exports = async function solution(res: Response) {
+  parseFile(__dirname, (testDataArray, dataArray) => {
+    let [sol1, sol2, testSol1, testSol2] = [0, 0, 0, 0];
+    dataArray.forEach((round) => {
       const [hisChoice, myChoice] = round.split(" ");
       if (hisChoice && myChoice) {
-        totalPart1 += getPointsPart1(
+        sol1 += getPointsPart1(hisChoice as HisChoice, myChoice as MyChoice);
+        sol2 += getPointsPart2(hisChoice as HisChoice, myChoice as MyChoice);
+      }
+    });
+
+    testDataArray.forEach((round) => {
+      const [hisChoice, myChoice] = round.split(" ");
+      if (hisChoice && myChoice) {
+        testSol1 += getPointsPart1(
           hisChoice as HisChoice,
           myChoice as MyChoice
         );
-        totalPart2 += getPointsPart2(
+        testSol2 += getPointsPart2(
           hisChoice as HisChoice,
           myChoice as MyChoice
         );
       }
-    }
+    });
 
     // Format solutions, render view
-    firstPartSolution = totalPart1;
-    secondPartSolution = totalPart2;
     res.render("solution", {
       availableSolutions: getAvailableSolutions(),
       dayNb: 2,
       errorMessage,
-      firstPartSolution,
-      secondPartSolution,
-      useTestData,
+      sol1,
+      sol2,
+      testSol1,
+      testSol2,
     });
   });
 };

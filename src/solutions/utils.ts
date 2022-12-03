@@ -3,23 +3,41 @@ import readline from "readline";
 import path from "path";
 
 export const parseFile = (
-  useTestData: boolean,
   dirnameToImportFrom: string,
-  callbackOnClose: (dataArray: string[]) => void
+  callbackOnClose: (testDataArray: string[], dataArray: string[]) => void
 ) => {
+  let nbOfFilesRead = 0;
   const dataPath = path.join(dirnameToImportFrom, "input.txt");
   const testDataPath = path.join(dirnameToImportFrom, "test-input.txt");
-  const filePath = useTestData ? testDataPath : dataPath;
-  const file = readline.createInterface({
-    input: createReadStream(filePath),
+  let dataArray: string[] = [];
+  let testDataArray: string[] = [];
+
+  // Test file
+  const testFile = readline.createInterface({
+    input: createReadStream(testDataPath),
     output: process.stdout,
     terminal: false,
   });
-  let dataArray: string[] = [];
+  testFile.on("line", (line) => {
+    testDataArray.push(line);
+  });
+
+  // "Real" file
+  const file = readline.createInterface({
+    input: createReadStream(dataPath),
+    output: process.stdout,
+    terminal: false,
+  });
   file.on("line", (line) => {
     dataArray.push(line);
   });
 
+  const cb = () =>
+    nbOfFilesRead === 1
+      ? callbackOnClose(testDataArray, dataArray)
+      : (nbOfFilesRead += 1);
+
   // Process data
-  file.on("close", () => callbackOnClose(dataArray));
+  file.on("close", () => cb());
+  testFile.on("close", () => cb());
 };

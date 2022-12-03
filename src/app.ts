@@ -20,10 +20,9 @@ app.get("/", (req: Request, res: Response) => {
 
 app.get("/days/:id", async (req: Request, res: Response) => {
   const dayNb = req.params.id;
-  const useTestData = req.query.useTestData !== undefined;
   const solution = require("./solutions/" + dayNb);
   if (solution) {
-    await solution(res, !!useTestData);
+    await solution(res);
   } else {
     res.send("Solution not available (yet)!");
   }

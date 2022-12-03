@@ -11,21 +11,8 @@
 
         <% if(errorMessage) { %>
         <div class="alert alert-danger" role="alert"><%= errorMessage %></div>
-        <% }%> <% if (useTestData) { %>
-        <p class="font-weight-bold text-danger">
-          Using test data
-          <a class="btn btn-primary" href="/days/<%= dayNb %>"
-            >Show solution with real data</a
-          >
-        </p>
-        <% } else { %>
-        <p class="font-weight-bold">
-          Using real data
-          <a class="btn btn-primary" href="/days/<%= dayNb %>?useTestData"
-            >Show solution with test data</a
-          >
-        </p>
         <% }%>
+
         <p>
           <a
             href="https://adventofcode.com/2022/day/<%= dayNb %>"
@@ -37,10 +24,12 @@
         </p>
 
         <h2>First part</h2>
-        <p><%= firstPartSolution %></p>
+        <p class="m-0"><b>Test data: </b><%= testSol1 %></p>
+        <p><b>Real data: </b><%= sol1 %></p>
 
         <h2>Second part</h2>
-        <p><%= secondPartSolution %></p>
+        <p class="m-0"><b>Test data: </b><%= testSol2 %></p>
+        <p><b>Real data: </b><%= sol2 %></p>
 
         <p>
           Code (TypeScript) available on &nbsp;

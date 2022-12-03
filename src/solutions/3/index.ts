@@ -71,28 +71,33 @@ function getAllItemsInBothCompartment(dataArray: string[]) {
   return itemsInBoth;
 }
 
-module.exports = async function solution(res: Response, useTestData: boolean) {
-  parseFile(useTestData, __dirname, (dataArray) => {
+module.exports = async function solution(res: Response) {
+  parseFile(__dirname, (testDataArray, dataArray) => {
     // Part 1
     const itemsInBoth = getAllItemsInBothCompartment(dataArray);
+    const test_itemsInBoth = getAllItemsInBothCompartment(testDataArray);
 
     // Part 2
     const badges = getBadges(dataArray);
+    const test_badges = getBadges(testDataArray);
 
     // Format solutions, render view
     const getTotal = (items: string[]) =>
       items.reduce((acc, char) => acc + getCharPriority(char), 0);
 
-    const firstPartSolution = getTotal(itemsInBoth);
-    const secondPartSolution = getTotal(badges);
+    const sol1 = getTotal(itemsInBoth);
+    const sol2 = getTotal(badges);
+    const testSol1 = getTotal(test_itemsInBoth);
+    const testSol2 = getTotal(test_badges);
 
     res.render("solution", {
       availableSolutions: getAvailableSolutions(),
       dayNb: 3,
       errorMessage,
-      firstPartSolution,
-      secondPartSolution,
-      useTestData,
+      testSol1,
+      testSol2,
+      sol1,
+      sol2,
     });
   });
 };
