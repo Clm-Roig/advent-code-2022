@@ -78,30 +78,23 @@ const getPointsPart2 = (hisChoice: HisChoice, myChoice: MyChoice) => {
   return res;
 };
 
+function getSolutions(dataArray: string[]) {
+  let sol1 = 0;
+  let sol2 = 0;
+  dataArray.forEach((round) => {
+    const [hisChoice, myChoice] = round.split(" ");
+    if (hisChoice && myChoice) {
+      sol1 += getPointsPart1(hisChoice as HisChoice, myChoice as MyChoice);
+      sol2 += getPointsPart2(hisChoice as HisChoice, myChoice as MyChoice);
+    }
+  });
+  return { sol1, sol2 };
+}
+
 module.exports = async function solution(res: Response) {
   parseFile(__dirname, (testDataArray, dataArray) => {
-    let [sol1, sol2, testSol1, testSol2] = [0, 0, 0, 0];
-    dataArray.forEach((round) => {
-      const [hisChoice, myChoice] = round.split(" ");
-      if (hisChoice && myChoice) {
-        sol1 += getPointsPart1(hisChoice as HisChoice, myChoice as MyChoice);
-        sol2 += getPointsPart2(hisChoice as HisChoice, myChoice as MyChoice);
-      }
-    });
-
-    testDataArray.forEach((round) => {
-      const [hisChoice, myChoice] = round.split(" ");
-      if (hisChoice && myChoice) {
-        testSol1 += getPointsPart1(
-          hisChoice as HisChoice,
-          myChoice as MyChoice
-        );
-        testSol2 += getPointsPart2(
-          hisChoice as HisChoice,
-          myChoice as MyChoice
-        );
-      }
-    });
+    const { sol1, sol2 } = getSolutions(dataArray);
+    const { sol1: testSol1, sol2: testSol2 } = getSolutions(testDataArray);
 
     // Format solutions, render view
     res.render("solution", {
