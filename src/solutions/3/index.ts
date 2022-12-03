@@ -44,7 +44,7 @@ function getBadges(dataArray: string[]) {
 
     // Remove duplicated chars (using Set) & iterate to eliminate items not in the 3 sacks
     let commonChars = Array.from(new Set(sack1.split(""))).filter(
-      (char) => !sack2.includes(char) || !sack3.includes(char)
+      (char) => sack2.includes(char) && sack3.includes(char)
     );
 
     if (commonChars.length !== 1) {
