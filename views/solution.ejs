@@ -7,7 +7,10 @@
   <body>
     <div class="container-lg flex-md-row flex-column d-flex mt-2">
       <div class="d-flex flex-column" style="flex: 2">
-        <h1>My day <%= dayNb %> solution</h1>
+        <h1>
+          My day <%= dayNb %> solution - <%= availableSolutions.find((s) =>
+          s.dayNb == dayNb).name %>
+        </h1>
 
         <% if(errorMessage) { %>
         <div class="alert alert-danger" role="alert"><%= errorMessage %></div>

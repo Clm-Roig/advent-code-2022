@@ -1,4 +1,5 @@
 import { Response } from "express";
+import { basename } from "path";
 import getAvailableSolutions from "../../getAvailableSolutions";
 import { parseFile } from "../utils";
 
@@ -107,7 +108,7 @@ module.exports = async function solution(res: Response) {
     // Format solutions, render view
     res.render("solution", {
       availableSolutions: getAvailableSolutions(),
-      dayNb: 2,
+      dayNb: basename(__dirname),
       errorMessage,
       sol1,
       sol2,
