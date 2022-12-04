@@ -1,13 +1,13 @@
 import { Response } from "express";
 import getAvailableSolutions from "../../getAvailableSolutions";
-import { parseFile } from "../utils";
+import { getMax, getMin, parseFile } from "../utils";
 
 let errorMessage: string;
 
 // If newValue is greater than the min value of threeMaxValues, replace it.
 const checkAndReplace = (threeMaxValues: number[], newValue: number) => {
   let res = threeMaxValues;
-  const minValue = Math.min.apply(Math, threeMaxValues);
+  const minValue = getMin(threeMaxValues);
   const minIdx = threeMaxValues.findIndex((v) => v === minValue);
   if (minValue < newValue) {
     res = [...threeMaxValues.filter((v, idx) => idx !== minIdx), newValue];
@@ -41,8 +41,7 @@ module.exports = async function solution(res: Response) {
     let test_threeMaxValues: number[] = getThreeMaxValues(testDataArray);
 
     // Format solutions, render view
-    const getSol1 = (threeMaxValues: number[]) =>
-      Math.max.apply(Math, threeMaxValues) + "";
+    const getSol1 = (threeMaxValues: number[]) => getMax(threeMaxValues) + "";
     const getSol2 = (threeMaxValues: number[]) =>
       threeMaxValues.reduce((total, v) => total + v, 0);
 
