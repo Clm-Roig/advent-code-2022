@@ -13,7 +13,7 @@ app.set("view engine", "ejs");
 app.get("/", (req: Request, res: Response) => {
   res.render("home", {
     dayNb: 0,
-    subject: "C. Roig - Advent of Code 2022",
+    subject: "C. ROIG - Advent of Code 2022",
     availableSolutions: getAvailableSolutions(),
   });
 });
