@@ -1,26 +1,10 @@
-<ul class="list-group">
+<div class="list-group">
   <%availableSolutions.map( solution=> {%>
-
-  <li
-    class="list-group-item p-2 <%= dayNb == solution.dayNb ? 'active' : '' %>"
+  <a
+    class="list-group-item list-group-item-action p-2 <%= dayNb == solution.dayNb ? 'active' : '' %>"
+    href="/days/<%= solution.dayNb %>"
   >
-    <h2 class="h4">Day <%= solution.dayNb %> - <%= solution.name %></h2>
-    <p class="m-0">
-      <a
-        class="<%= dayNb == solution.dayNb ? 'link-light' : '' %>"
-        href="https://adventofcode.com/2022/day/<%= solution.dayNb %>"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        Statement</a
-      >
-      <span>-</span>
-      <a
-        class="<%= dayNb == solution.dayNb ? 'link-light' : '' %>"
-        href="/days/<%= solution.dayNb %>"
-        >My solution</a
-      >
-    </p>
-  </li>
+    <p class="h5">Day <%= solution.dayNb %> - <%= solution.name %></p>
+  </a>
   <%})%>
 </ul>
