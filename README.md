@@ -1,4 +1,4 @@
-# Advent of Code 2022
+# Advent of Code 2022 :christmas_tree: :santa:
 
 A small website displaying my solutions to the [Advent of Code 2022](https://adventofcode.com/2022). Built using Node.js, Express, EJS and TypeScript.
 
