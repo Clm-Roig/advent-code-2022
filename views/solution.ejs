@@ -1,82 +1,77 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <%- include('./head', {subject: 'C. ROIG - Solution day ' + dayNb}); %>
-  </head>
+<%- include('./layout/top', {subject: 'C. ROIG - Solution day ' + dayNb}); %>
 
-  <body>
-    <div class="container-lg flex-md-row flex-column d-flex mt-2">
-      <div class="d-flex flex-column" style="flex: 2">
-        <h1>
-          My day <%= dayNb %> solution - <%= availableSolutions.find((s) =>
-          s.dayNb == dayNb).name %>
-        </h1>
+<div class="flex-md-row flex-column d-flex">
+  <div class="d-flex flex-column" style="flex: 2">
+    <h1>
+      My day <%= dayNb %> solution - <%= availableSolutions.find((s) => s.dayNb
+      == dayNb).name %>
+    </h1>
 
-        <% if(errorMessage) { %>
-        <div class="alert alert-danger" role="alert"><%= errorMessage %></div>
-        <% }%>
+    <% if(errorMessage) { %>
+    <div class="alert alert-danger" role="alert"><%= errorMessage %></div>
+    <% }%>
 
-        <p>
-          <a
-            href="https://adventofcode.com/2022/day/<%= dayNb %>"
-            target="_blank"
-            rel="noopener noreferrer"
+    <p>
+      <a
+        href="https://adventofcode.com/2022/day/<%= dayNb %>"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        Statement</a
+      >
+    </p>
+
+    <h2>First part</h2>
+    <p class="m-0"><b>Test data: </b><%= testSol1 %></p>
+    <p><b>Real data: </b><%= sol1 %></p>
+
+    <h2>Second part</h2>
+    <p class="m-0"><b>Test data: </b><%= testSol2 %></p>
+    <p><b>Real data: </b><%= sol2 %></p>
+
+    <p>
+      Code (TypeScript) available on
+      <a
+        href="https://github.com/Clm-Roig/advent-of-code-2022/tree/main/src/solutions/<%= dayNb %>/index.ts"
+        target="_blank"
+        rel="noopener noreferrer"
+        >my GitHub repository</a
+      >
+    </p>
+
+    <div class="accordion" id="codeAccordion">
+      <div class="accordion-item">
+        <h2 class="accordion-header" id="codeHeading">
+          <button
+            class="accordion-button collapsed"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#codeScript"
+            aria-expanded="false"
+            aria-controls="codeScript"
           >
-            Statement</a
-          >
-        </p>
-
-        <h2>First part</h2>
-        <p class="m-0"><b>Test data: </b><%= testSol1 %></p>
-        <p><b>Real data: </b><%= sol1 %></p>
-
-        <h2>Second part</h2>
-        <p class="m-0"><b>Test data: </b><%= testSol2 %></p>
-        <p><b>Real data: </b><%= sol2 %></p>
-
-        <p>
-          Code (TypeScript) available on
-          <a
-            href="https://github.com/Clm-Roig/advent-of-code-2022/tree/main/src/solutions/<%= dayNb %>/index.ts"
-            target="_blank"
-            rel="noopener noreferrer"
-            >my GitHub repository</a
-          >
-        </p>
-
-        <div class="accordion" id="codeAccordion">
-          <div class="accordion-item">
-            <h2 class="accordion-header" id="codeHeading">
-              <button
-                class="accordion-button collapsed"
-                type="button"
-                data-bs-toggle="collapse"
-                data-bs-target="#codeScript"
-                aria-expanded="false"
-                aria-controls="codeScript"
-              >
-                Show source code
-              </button>
-            </h2>
-            <div
-              id="codeScript"
-              class="accordion-collapse collapse"
-              aria-labelledby="codeHeading"
-              data-bs-parent="#codeAccordion"
-            >
-              <div class="accordion-body">
-                <script src="https://emgithub.com/embed-v2.js?target=https%3A%2F%2Fgithub.com%2FClm-Roig%2Fadvent-of-code-2022%2Fblob%2Fmain%2Fsrc%2Fsolutions%2F<%= dayNb %>%2Findex.ts&style=github-dark&type=code&showBorder=on&showLineNumbers=on&showFileMeta=on&showFullPath=on&showCopy=on"></script>
-              </div>
-            </div>
+            Show source code
+          </button>
+        </h2>
+        <div
+          id="codeScript"
+          class="accordion-collapse collapse"
+          aria-labelledby="codeHeading"
+          data-bs-parent="#codeAccordion"
+        >
+          <div class="accordion-body">
+            <script src="https://emgithub.com/embed-v2.js?target=https%3A%2F%2Fgithub.com%2FClm-Roig%2Fadvent-of-code-2022%2Fblob%2Fmain%2Fsrc%2Fsolutions%2F<%= dayNb %>%2Findex.ts&style=github-dark&type=code&showBorder=on&showLineNumbers=on&showFileMeta=on&showFullPath=on&showCopy=on"></script>
           </div>
         </div>
-
-        <hr />
-
-        <a class="btn btn-link" href="/">⬅ Go back to home page</a>
       </div>
-
-      <aside style="flex: 1"><%- include('./solutionList'); %></aside>
     </div>
-  </body>
-</html>
+
+    <hr />
+
+    <a class="btn btn-link" href="/">⬅ Go back to home page</a>
+  </div>
+
+  <aside style="flex: 1"><%- include('./components/solutionList'); %></aside>
+</div>
+
+<%- include('./layout/bottom'); %>

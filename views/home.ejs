@@ -1,35 +1,23 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <%- include('./head', {subject: subject}); %>
-  </head>
-
-  <body>
-    <div class="container mt-2">
-      <header>
-        <h1>
-          <a
-            href="https://clm-roig.github.io"
-            target="_blank"
-            rel="noopener noreferrer"
-            >Clément ROIG</a
-          >
-          Advent of Code 2022
-        </h1>
-      </header>
-      <section>
-        <p>
-          See
-          <a
-            href="https://adventofcode.com/"
-            target="blank"
-            rel="noopener noreferrer"
-            >https://adventofcode.com/</a
-          >
-          for more information about this event.
-        </p>
-        <%- include('./solutionList', {}); %>
-      </section>
-    </div>
-  </body>
-</html>
+<%- include('./layout/top', {subject: 'C. ROIG - Solution day ' + dayNb}); %>
+<header>
+  <h1>
+    <a
+      href="https://clm-roig.github.io"
+      target="_blank"
+      rel="noopener noreferrer"
+      >Clément ROIG</a
+    >
+    Advent of Code 2022
+  </h1>
+</header>
+<section>
+  <p>
+    See
+    <a href="https://adventofcode.com/" target="blank" rel="noopener noreferrer"
+      >https://adventofcode.com/</a
+    >
+    for more information about this event.
+  </p>
+  <%- include('./components/solutionList', {}); %>
+</section>
+<%- include('./layout/bottom'); %>
