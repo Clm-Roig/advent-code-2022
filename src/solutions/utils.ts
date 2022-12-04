@@ -41,3 +41,6 @@ export const parseFile = (
   file.on("close", () => cb());
   testFile.on("close", () => cb());
 };
+
+export const getMin = (arr: number[]) => Math.min(...arr);
+export const getMax = (arr: number[]) => Math.max(...arr);
