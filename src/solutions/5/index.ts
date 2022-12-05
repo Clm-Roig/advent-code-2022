@@ -70,8 +70,8 @@ function getSolution1(stacks: string[][], moves: Move[]): string {
   for (const move of moves) {
     const { qty, from, to } = move;
     for (let i = 0; i < qty; i++) {
-      const stack = stacksCopy[from].pop() as string; // force to string to avoid undefined (can't happen)
-      stacksCopy[to].push(stack);
+      const movedStack = stacksCopy[from].pop() as string; // force to string to avoid undefined (can't happen)
+      stacksCopy[to].push(movedStack);
     }
   }
   return getCratesOnTop(stacksCopy);
@@ -82,8 +82,8 @@ function getSolution2(stacks: string[][], moves: Move[]): string {
   const stacksCopy = stacks.map((s) => s.slice());
   for (const move of moves) {
     const { qty, from, to } = move;
-    const stacks = stacksCopy[from].splice(-qty); // get latest qty crate
-    stacks.map((s) => stacksCopy[to].push(s));
+    const movedStacks = stacksCopy[from].splice(-qty); // get latest qty crate
+    stacksCopy[to].push(...movedStacks);
   }
   return getCratesOnTop(stacksCopy);
 }
