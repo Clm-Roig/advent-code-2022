@@ -12,7 +12,7 @@ type AvailableSolution = {
 const getAvailableSolutions = () => {
   let availableSolutions: AvailableSolution[] = [];
   readdirSync(solutionFolder).forEach((file) => {
-    // ignore statementNames.ts file. Solution folders have always 1 or 2 characters
+    // Solution folders have always 1 or 2 characters
     if (file.length <= 2) {
       availableSolutions.push({
         dayNb: file,

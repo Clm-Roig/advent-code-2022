@@ -4,6 +4,7 @@ const names = {
   3: "Rucksack Reorganization",
   4: "Camp Cleanup",
   5: "Supply Stacks",
+  6: "Tuning Trouble",
 };
 
 export default names;
