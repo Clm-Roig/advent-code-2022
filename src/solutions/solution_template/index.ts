@@ -25,12 +25,12 @@ function getSolution2(): string {
 module.exports = async function solution(res: Response) {
   parseFile(__dirname, (testDataArray, dataArray) => {
     // Parse data
-    parseData(dataArray);
-    parseData(testDataArray);
+    const data = parseData(dataArray);
+    const test_data = parseData(testDataArray);
 
     // Compute solutions
-    // const sol1 = getSolution1(stacks, moves);
-    // const sol2 = getSolution2(stacks, moves);
+    // const sol1 = getSolution1(data);
+    // const sol2 = getSolution2(data);
     const sol1 = "";
     const sol2 = "";
     const testSol1 = getSolution1();
