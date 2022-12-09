@@ -1,7 +1,7 @@
 import { Response } from "express";
 import { basename } from "path";
 import getAvailableSolutions from "../../getAvailableSolutions";
-import { getMax, getMin, parseFile } from "../utils";
+import { getMax, getMin, parseFiles } from "../utils";
 
 let errorMessage: string;
 
@@ -36,7 +36,7 @@ function getThreeMaxValues(dataArray: string[]) {
 }
 
 module.exports = async function solution(res: Response) {
-  parseFile(__dirname, (testDataArray, dataArray) => {
+  parseFiles(__dirname, (testDataArray, dataArray) => {
     // Aggregate calories by elf, keep only the 3 max
     let threeMaxValues: number[] = getThreeMaxValues(dataArray);
     let test_threeMaxValues: number[] = getThreeMaxValues(testDataArray);

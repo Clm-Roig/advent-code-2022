@@ -4,6 +4,27 @@ import path from "path";
 
 export const parseFile = (
   dirnameToImportFrom: string,
+  fileName: string,
+  callbackOnClose: (dataArray: string[]) => void
+) => {
+  const dataPath = path.join(dirnameToImportFrom, fileName);
+  let dataArray: string[] = [];
+
+  const file = readline.createInterface({
+    input: createReadStream(dataPath),
+    output: process.stdout,
+    terminal: false,
+  });
+  file.on("line", (line) => {
+    dataArray.push(line);
+  });
+
+  // Process data
+  file.on("close", () => callbackOnClose(dataArray));
+};
+
+export const parseFiles = (
+  dirnameToImportFrom: string,
   callbackOnClose: (testDataArray: string[], dataArray: string[]) => void
 ) => {
   let nbOfFilesRead = 0;

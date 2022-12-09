@@ -1,7 +1,7 @@
 import { Response } from "express";
 import { basename } from "path";
 import getAvailableSolutions from "../../getAvailableSolutions";
-import { getMax, getMin, parseFile } from "../utils";
+import { getMax, getMin, parseFiles } from "../utils";
 
 let errorMessage: string;
 
@@ -56,7 +56,7 @@ function getSolution2(splittedAssignments: number[][][]) {
 }
 
 module.exports = async function solution(res: Response) {
-  parseFile(__dirname, (testDataArray, dataArray) => {
+  parseFiles(__dirname, (testDataArray, dataArray) => {
     // Parse data
     const splittedAssignments = parseData(dataArray);
     const test_splittedAssignments = parseData(testDataArray);

@@ -7,6 +7,7 @@ const names = {
   6: "Tuning Trouble",
   7: "No Space Left On Device",
   8: "Treetop Tree House",
+  9: "Rope Bridge",
 };
 
 export default names;

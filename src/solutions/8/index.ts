@@ -1,7 +1,7 @@
 import { Response } from "express";
 import { basename } from "path";
 import getAvailableSolutions from "../../getAvailableSolutions";
-import { parseFile } from "../utils";
+import { parseFiles } from "../utils";
 
 let errorMessage: string;
 
@@ -169,7 +169,7 @@ function getSolution2(forest: Forest): number {
 }
 
 module.exports = async function solution(res: Response) {
-  parseFile(__dirname, (testDataArray, dataArray) => {
+  parseFiles(__dirname, (testDataArray, dataArray) => {
     // Parse data
     const test_forest = parseData(testDataArray);
     const forest = parseData(dataArray);

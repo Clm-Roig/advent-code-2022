@@ -1,7 +1,7 @@
 import { Response } from "express";
 import { basename } from "path";
 import getAvailableSolutions from "../../getAvailableSolutions";
-import { parseFile } from "../utils";
+import { parseFiles } from "../utils";
 
 let errorMessage: string;
 
@@ -73,7 +73,7 @@ function getAllItemsInBothCompartment(dataArray: string[]) {
 }
 
 module.exports = async function solution(res: Response) {
-  parseFile(__dirname, (testDataArray, dataArray) => {
+  parseFiles(__dirname, (testDataArray, dataArray) => {
     // Part 1
     const itemsInBoth = getAllItemsInBothCompartment(dataArray);
     const test_itemsInBoth = getAllItemsInBothCompartment(testDataArray);

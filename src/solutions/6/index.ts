@@ -1,7 +1,7 @@
 import { Response } from "express";
 import { basename, resolve } from "path";
 import getAvailableSolutions from "../../getAvailableSolutions";
-import { parseFile } from "../utils";
+import { parseFiles } from "../utils";
 
 let errorMessage: string;
 
@@ -27,7 +27,7 @@ const getSolution1 = (text: string): number => getStartCharPosition(text, 4);
 const getSolution2 = (text: string): number => getStartCharPosition(text, 14);
 
 module.exports = async function solution(res: Response) {
-  parseFile(__dirname, (testDataArray, dataArray) => {
+  parseFiles(__dirname, (testDataArray, dataArray) => {
     // Compute solutions
     const sol1 = getSolution1(dataArray[0]);
     const sol2 = getSolution2(dataArray[0]);

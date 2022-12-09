@@ -1,7 +1,7 @@
 import { Response } from "express";
 import { basename } from "path";
 import getAvailableSolutions from "../../getAvailableSolutions";
-import { parseFile } from "../utils";
+import { parseFiles } from "../utils";
 import TreeNode from "../TreeNode";
 let errorMessage: string;
 
@@ -101,7 +101,7 @@ function getSolution2(tree: TreeNode<number>): number {
 }
 
 module.exports = async function solution(res: Response) {
-  parseFile(__dirname, (testDataArray, dataArray) => {
+  parseFiles(__dirname, (testDataArray, dataArray) => {
     // Parse data
     const tree = parseData(dataArray);
     const test_tree = parseData(testDataArray);
