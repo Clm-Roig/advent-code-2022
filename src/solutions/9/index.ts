@@ -15,7 +15,6 @@ enum Direction {
   U = "Up",
   D = "Down",
 }
-
 type Coord = {
   x: number;
   y: number;
@@ -26,6 +25,7 @@ const printVisitedPositions = (visited: Coord[]) => {
   const maxX = getMax(visited.map((c) => c.x));
   const minY = getMin(visited.map((c) => c.y));
   const maxY = getMax(visited.map((c) => c.y));
+  console.log("\n");
   for (let y = maxY; y >= minY; y--) {
     let line = "";
     for (let x = minX; x <= maxX; x++) {
@@ -63,74 +63,145 @@ const parseData = (dataArray: string[]) => {
   return moves;
 };
 
-// For a rope with two knots : Head and tail
-function tailMustMove(head: Coord, tail: Coord): boolean {
+/**
+ * Move a knot relatively to its previous knot and return the new knot coordinates
+ * @param {Coord} knot
+ * @param {Coord} prevKnot
+ * @returns {Coord}
+ */
+function moveKnot(knot: Coord, prevKnot: Coord): Coord {
   const { abs } = Math;
-  const yDiff = abs(head.y - tail.y);
-  const xDiff = abs(head.x - tail.x);
-  // Same row
-  if (head.x === tail.x && yDiff > 1) {
-    return true;
-  }
-  // Same column
-  if (head.y === tail.y && xDiff > 1) {
-    return true;
-  }
-  // Not same row or column
-  return xDiff > 1 || yDiff > 1;
-}
+  const xDiff = prevKnot.x - knot.x;
+  const yDiff = prevKnot.y - knot.y;
 
-function tailMustMoveSol2(head: Coord, tail: Coord, ropeSize: number): boolean {
-  const { abs } = Math;
-  const yDiff = abs(head.y - tail.y);
-  const xDiff = abs(head.x - tail.x);
-  // Same row
-  if (head.x === tail.x && yDiff > ropeSize - 1) {
-    return true;
+  // Simple diagonal or just 1 step further: don't move
+  if (
+    (abs(xDiff) === 1 && abs(yDiff) === 1) ||
+    (abs(xDiff) === 1 && abs(yDiff) === 0) ||
+    (abs(xDiff) === 0 && abs(yDiff) === 1) ||
+    (abs(xDiff) === 0 && abs(yDiff) === 0)
+  ) {
+    return { ...knot };
   }
-  // Same column
-  if (head.y === tail.y && xDiff > ropeSize - 1) {
-    return true;
-  }
-  // Not same row or column
-  return xDiff > ropeSize - 1 || yDiff > ropeSize - 1;
-}
 
-// Part 1 algo
-function getSolution1(moves: Move[]): number {
-  let x = 0;
-  let y = 0;
-  let head = { x, y };
-  let prevHead = { x, y };
-  let tail = { x, y };
-  let visited: Coord[] = [];
-  visited.push(tail);
-  for (const move of moves) {
-    const { direction, steps } = move;
-    for (let i = 0; i < steps; i++) {
-      if (tailMustMove(head, tail)) {
-        tail = prevHead;
-        visited.push(tail);
-      }
-      prevHead = head;
-      head = moveTo(head, direction);
+  // By default, go to the previous knot. In the following lines, we adjust the destination by +/-1
+  let { x: destX, y: destY } = prevKnot;
+
+  // Diagonal: move knot in diagonal
+  // .  .  .  .      .  .  .  .
+  // .  Pk .  .  =>  .  Pk .  .
+  // .  .  .  .      .  .  k  .
+  // .  .  .  k      .  .  .  .
+  if (xDiff === 2 && yDiff === 2) {
+    // Top right
+    return { x: destX - 1, y: destY - 1 };
+  }
+  if (xDiff === 2 && yDiff === -2) {
+    // Bottom right
+    return { x: destX - 1, y: destY + 1 };
+  }
+  if (xDiff === -2 && yDiff === 2) {
+    // Top left
+    return { x: destX + 1, y: destY - 1 };
+  }
+  if (xDiff === -2 && yDiff === -2) {
+    // Bottom left
+    return { x: destX + 1, y: destY + 1 };
+  }
+
+  // Same row
+  if (prevKnot.x === knot.x) {
+    if (yDiff == 2) return { x: destX, y: destY - 1 };
+    if (yDiff == -2) return { x: destX, y: destY + 1 };
+  }
+
+  // Same column
+  if (prevKnot.y === knot.y) {
+    if (xDiff == 2) return { x: destX - 1, y: destY };
+    if (xDiff == -2) return { x: destX + 1, y: destY };
+  }
+
+  // Not same column or same row (diagonally)
+  if (abs(xDiff) === 2 || abs(yDiff) === 2) {
+    // ===== Horizontally close =====//
+    // Previous knot at top right or bottom right: k comes at the left of Pk
+    // *  *  Pk   ||    k  *  *
+    // k  *  *    ||    *  *  Pk
+
+    if ((xDiff === 2 && yDiff === 1) || (xDiff === 2 && yDiff === -1)) {
+      return { x: destX - 1, y: destY };
+    }
+
+    // Previous knot at top left or bottom left: k comes at the right of Pk
+    // Pk  *  *     ||    *   *  k
+    // *   *  k     ||    Pk  *  *
+    if ((xDiff === -2 && yDiff === 1) || (xDiff === -2 && yDiff === -1)) {
+      return { x: destX + 1, y: destY };
+    }
+
+    // ===== Vertically close =====//
+    // Previous knot at top left or top right: k comes at the bottom of Pk
+    // Pk  *    ||    *   Pk
+    // *   *    ||    *   *
+    // *   k    ||    k   *
+    if ((xDiff === -1 && yDiff === 2) || (xDiff === 1 && yDiff === 2)) {
+      return { x: destX, y: destY - 1 };
+    }
+
+    // Previous knot at bottom left or bottom right: k comes at the top of Pk
+    // *   k    ||    k   *
+    // *   *    ||    *   *
+    // Pk  *    ||    *   Pk
+    if ((xDiff === -1 && yDiff === -2) || (xDiff === 1 && yDiff === -2)) {
+      return { x: destX, y: destY + 1 };
     }
   }
 
-  // Remove duplicates
+  console.error("Trying to move: ");
+  console.error("Knot: x=" + knot.x + " y=" + knot.y);
+  console.error("Previous knot: x=" + prevKnot.x + " y=" + prevKnot.y);
+  throw new Error("Error while moving knot");
+}
+
+function removeDuplicates(visited: Coord[]): Coord[] {
   let uniquePositions: Coord[] = [];
   for (const c of visited) {
     if (!uniquePositions.find((c2) => c2.x === c.x && c2.y === c.y)) {
       uniquePositions.push(c);
     }
   }
+  return uniquePositions;
+}
 
-  return uniquePositions.length;
+function moveRope(moves: Move[], ropeLength: number): Coord[] {
+  const knots = [];
+  for (let i = 0; i < ropeLength; i++) {
+    knots.push({ x: 0, y: 0 });
+  }
+  let visitedByTail = [];
+  for (const move of moves) {
+    const { direction, steps } = move;
+    for (let i = 0; i < steps; i++) {
+      knots[0] = moveTo(knots[0], direction);
+      for (let j = 1; j < knots.length; j++) {
+        knots[j] = moveKnot(knots[j], knots[j - 1]);
+        if (j === knots.length - 1) {
+          visitedByTail.push(knots[j]);
+        }
+      }
+    }
+  }
+  return visitedByTail;
+}
+
+// Part 1 algo
+function getSolution1(moves: Move[]): number {
+  return removeDuplicates(moveRope(moves, 2)).length;
 }
 
 // Part 2 algo
 function getSolution2(moves: Move[]) {
-  return undefined;
+  return removeDuplicates(moveRope(moves, 10)).length;
 }
 
 module.exports = async function solution(res: Response) {
