@@ -21,7 +21,9 @@ const getAvailableSolutions = () => {
       });
     }
   });
-  return availableSolutions;
+  return availableSolutions.sort(
+    (s1, s2) => Number(s1.dayNb) - Number(s2.dayNb)
+  );
 };
 
 export default getAvailableSolutions;
