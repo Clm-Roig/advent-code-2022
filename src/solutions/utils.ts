@@ -65,3 +65,6 @@ export const parseFiles = (
 
 export const getMin = (arr: number[]) => Math.min(...arr);
 export const getMax = (arr: number[]) => Math.max(...arr);
+
+export const isInRange = (low: number, x: number, high: number) =>
+  x >= low && x <= high;
