@@ -14,13 +14,13 @@ type Point = {
   isVisited: boolean;
 };
 
-function dijkstraPath(map: Point[]) {
+function dijkstraPath(map: Point[], solution2Flag: boolean): Point[] {
   let visitedPoints = [];
   let unvisitedPoints = map;
   let source = unvisitedPoints.find((p) => p.char === "S")!;
   let destinationFound = false;
 
-  while (!destinationFound || unvisitedPoints.length > 0) {
+  while (!destinationFound && unvisitedPoints.length > 0) {
     const neighbors = unvisitedPoints.filter(
       (p) =>
         !p.isVisited &&
@@ -29,14 +29,15 @@ function dijkstraPath(map: Point[]) {
     );
 
     for (const neighbor of neighbors) {
-      neighbor.distance =
-        neighbor.height <= source.height + 1
-          ? Math.min(neighbor.distance, source.distance + 1)
-          : Math.min(neighbor.distance, Infinity);
-      if (source.char === "z" || source.char === "y") {
-        // console.log("===============");
-        // console.log(source);
-        // console.log(neighbors);
+      if (neighbor.height <= source.height + 1) {
+        if (solution2Flag) {
+          neighbor.distance =
+            neighbor.char === "a"
+              ? 0
+              : Math.min(neighbor.distance, source.distance + 1);
+        } else {
+          neighbor.distance = Math.min(neighbor.distance, source.distance + 1);
+        }
       }
     }
 
@@ -48,18 +49,13 @@ function dijkstraPath(map: Point[]) {
 
     if (source.char === "E") {
       destinationFound = true;
-    } else if (neighbors.length > 0) {
-      const minDist = getMin(neighbors.map((n) => n.distance));
-      source = neighbors.find((n) => n.distance === minDist)!;
-      if (!source) {
-        throw new Error("New source not found among neighbors");
-      }
     } else if (unvisitedPoints.length > 0) {
-      console.log("%%% starting again %%%");
-      source = unvisitedPoints[0];
+      const minDist = getMin(unvisitedPoints.map((n) => n.distance));
+      source = unvisitedPoints.find((n) => n.distance === minDist)!;
     }
   }
-  console.log(visitedPoints);
+
+  return visitedPoints;
 }
 
 function printMap(map: Point[]) {
@@ -124,29 +120,24 @@ const parseData = (dataArray: string[]) => {
 };
 
 // Part 1 algo
-function getSolution1(map: Point[]): string {
-  dijkstraPath(map);
-  return "ok";
+function getSolution1(map: Point[]): number {
+  const visitedPoints = dijkstraPath(map, false);
+  return visitedPoints.find((p) => p.char === "E")!.distance;
 }
 
 // Part 2 algo
-function getSolution2(): string {
-  return "sol2";
+function getSolution2(map: Point[]): number {
+  const visitedPoints = dijkstraPath(map, true);
+  return visitedPoints.find((p) => p.char === "E")!.distance;
 }
 
 module.exports = async function solution(res: Response) {
   parseFiles(__dirname, (testDataArray, dataArray) => {
-    // Parse data
-    // const data = parseData(dataArray);
-    const test_map = parseData(testDataArray);
-
     // Compute solutions
-    // const sol1 = getSolution1(data);
-    // const sol2 = getSolution2(data);
-    const sol1 = "";
-    const sol2 = "";
-    const testSol1 = getSolution1(test_map);
-    const testSol2 = getSolution2();
+    const sol1 = getSolution1(parseData(dataArray));
+    const sol2 = getSolution2(parseData(dataArray));
+    const testSol1 = getSolution1(parseData(testDataArray));
+    const testSol2 = getSolution2(parseData(testDataArray));
 
     // Render view
     res.render("solution", {
