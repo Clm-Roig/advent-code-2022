@@ -10,6 +10,7 @@ const names = {
   9: "Rope Bridge",
   10: "Cathode-Ray Tube",
   11: "Monkey in the Middle",
+  12: "Hill Climbing Algorithm",
 };
 
 export default names;
