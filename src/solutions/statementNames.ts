@@ -11,6 +11,7 @@ const names = {
   10: "Cathode-Ray Tube",
   11: "Monkey in the Middle",
   12: "Hill Climbing Algorithm",
+  13: "Distress Signal",
 };
 
 export default names;
