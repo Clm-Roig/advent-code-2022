@@ -12,6 +12,7 @@ const names = {
   11: "Monkey in the Middle",
   12: "Hill Climbing Algorithm",
   13: "Distress Signal",
+  14: "Regolith Reservoir",
 };
 
 export default names;
