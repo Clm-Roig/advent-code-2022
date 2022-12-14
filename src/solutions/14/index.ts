@@ -82,33 +82,90 @@ const parseData = (dataArray: string[]): Cave => {
 };
 
 function printCave(cave: Cave) {
+  console.log("\n====================");
   transpose(cave.map).map((line) => console.log(line.join("")));
 }
 
+const isOccupied = (point: string) => point === ROCK || point === SAND;
+
+const canStop = (map: Cave["map"], x: number, y: number): boolean =>
+  !isOccupied(map[x][y]) &&
+  isOccupied(map[x][y + 1]) &&
+  isOccupied(map[x + 1][y + 1]) &&
+  isOccupied(map[x - 1][y + 1]);
+
+function getSandDestination(
+  map: Cave["map"],
+  caveHeight: Cave["height"],
+  caveWidth: Cave["width"],
+  x: number,
+  y: number
+): { x: number; y: number } {
+  if (y > caveHeight || x === 0 || x === caveWidth - 1)
+    return { x: Infinity, y: Infinity };
+  if (canStop(map, x, y)) return { x, y };
+  if (!isOccupied(map[x][y + 1]))
+    return getSandDestination(map, caveHeight, caveWidth, x, y + 1);
+  if (x > 0 && !isOccupied(map[x - 1][y + 1]))
+    return getSandDestination(map, caveHeight, caveWidth, x - 1, y + 1);
+  if (!isOccupied(map[x + 1][y + 1]))
+    return getSandDestination(map, caveHeight, caveWidth, x + 1, y + 1);
+  return getSandDestination(map, caveHeight, caveWidth, x, y + 1);
+}
+
+function sandFall(
+  x: number,
+  y: number,
+  cave: Cave
+): { map: Cave["map"]; sandCount: number } {
+  let sandCount = 0;
+  let mapCopy = [...cave.map];
+  let stop = false;
+  while (!stop) {
+    const { x: sandX, y: sandY } = getSandDestination(
+      mapCopy,
+      cave.height,
+      cave.width,
+      x,
+      y
+    );
+    if (sandX === Infinity || sandY === Infinity) {
+      stop = true;
+    } else {
+      mapCopy[sandX][sandY] = SAND;
+      sandCount += 1;
+    }
+  }
+
+  return { map: mapCopy, sandCount };
+}
+
 // Part 1 algo
-function getSolution1(cave: Cave): string {
-  return "sol1";
+function getSolution1(cave: Cave): number {
+  const {
+    source: { x: sourceX, y: sourceY },
+  } = cave;
+  const { map: newMap, sandCount } = sandFall(sourceX, sourceY + 1, cave);
+  printCave(cave);
+
+  return sandCount;
 }
 
 // Part 2 algo
-function getSolution2(): string {
-  return "sol2";
+function getSolution2(cave: Cave): number {
+  return -1;
 }
 
 module.exports = async function solution(res: Response) {
   parseFiles(__dirname, (testDataArray, dataArray) => {
     // Parse data
-    // const data = parseData(dataArray);
-    const test_data = parseData(testDataArray);
-    printCave(test_data);
 
     // Compute solutions
-    // const sol1 = getSolution1(data);
+    const sol1 = getSolution1(parseData(dataArray));
     // const sol2 = getSolution2(data);
-    const sol1 = "";
     const sol2 = "";
-    const testSol1 = getSolution1(test_data);
-    const testSol2 = getSolution2();
+    const testSol1 = getSolution1(parseData(testDataArray));
+    const testSol2 = "";
 
     // Render view
     res.render("solution", {
