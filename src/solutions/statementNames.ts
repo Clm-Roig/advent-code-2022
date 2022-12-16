@@ -13,6 +13,8 @@ const names = {
   12: "Hill Climbing Algorithm",
   13: "Distress Signal",
   14: "Regolith Reservoir",
+  15: "Beacon Exclusion Zone",
+  16: "Proboscidea Volcanium",
 };
 
 export default names;

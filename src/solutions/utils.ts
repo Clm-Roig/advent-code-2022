@@ -68,3 +68,11 @@ export const getMax = (arr: number[]) => Math.max(...arr);
 
 export const isInRange = (low: number, x: number, high: number) =>
   x >= low && x <= high;
+
+export const removeDupplicates = <T>(arr: Array<T>, key: keyof T) =>
+  arr.filter((v, i, a) => a.findIndex((v2) => v2[key] === v[key]) === i);
+
+export const clearLastLine = () => {
+  process.stdout.moveCursor(0, -1); // up one line
+  process.stdout.clearLine(1); // from cursor to end
+};
