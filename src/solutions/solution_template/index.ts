@@ -29,12 +29,11 @@ module.exports = async function solution(res: Response) {
     const test_data = parseData(testDataArray);
 
     // Compute solutions
-    // const sol1 = getSolution1(data);
-    // const sol2 = getSolution2(data);
-    const sol1 = "";
-    const sol2 = "";
-    const testSol1 = getSolution1();
-    const testSol2 = getSolution2();
+    let testSol1, testSol2, sol1, sol2;
+    // sol1 = getSolution1(data);
+    // sol2 = getSolution2(data);
+    testSol1 = getSolution1();
+    testSol2 = getSolution2();
 
     // Render view
     res.render("solution", {

@@ -76,3 +76,14 @@ export const clearLastLine = () => {
   process.stdout.moveCursor(0, -1); // up one line
   process.stdout.clearLine(1); // from cursor to end
 };
+
+// You should use a console.log() once before starting your loop including this function
+export function displayProgressBar(j: number, maxValue: number) {
+  const percent = (j / maxValue) * 100;
+  process.stdout.write(`\r${percent.toFixed(4)}%`);
+  if (percent % 1 === 0) {
+    const done = Math.round(percent);
+    const todo = Math.round(100 - done);
+    process.stdout.write(`    |${"█".repeat(done)}${".".repeat(todo)}|`);
+  }
+}

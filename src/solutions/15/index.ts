@@ -1,7 +1,12 @@
 import { Response } from "express";
 import { basename } from "path";
 import getAvailableSolutions from "../../getAvailableSolutions";
-import { clearLastLine, parseFiles, removeDupplicates } from "../utils";
+import {
+  clearLastLine,
+  displayProgressBar,
+  parseFiles,
+  removeDupplicates,
+} from "../utils";
 
 let errorMessage: string;
 
@@ -21,7 +26,6 @@ interface Beacon extends Point {}
 interface Sensor extends Point {
   closestBeacon: Beacon;
   closestBeaconDistance: number;
-  noBeaconPoints: Point[];
 }
 
 class Zone {
@@ -32,6 +36,8 @@ class Zone {
   maxX: number;
   maxY: number;
 }
+
+const makePointId = (x: string | number, y: string | number) => x + ";" + y;
 
 const getManhattanDistance = (x1: number, y1: number, x2: number, y2: number) =>
   Math.abs(x1 - x2) + Math.abs(y1 - y2);
@@ -50,7 +56,7 @@ const parseData = (dataArray: string[]): Zone => {
     const sensorX = Number(sX);
     const sensorY = Number(sY);
     const beacon = {
-      id: beaconX + ";" + beaconY,
+      id: makePointId(beaconX, beaconY),
       x: Number(beaconX),
       y: Number(beaconY),
     };
@@ -60,46 +66,13 @@ const parseData = (dataArray: string[]): Zone => {
       beacon.x,
       beacon.y
     );
-    const noBeaconPoints: Point[] = [];
 
-    // ===== DEBUG (solution not scalable for "real input")
-    // const nbOfIterations =
-    //   sensorX + closestBeaconDistance - (sensorX - closestBeaconDistance);
-    // console.log(nbOfIterations + " iterations on i to do\n");
-    let count = 0;
-    for (
-      let i = sensorX - closestBeaconDistance;
-      i <= sensorX + closestBeaconDistance;
-      i++
-    ) {
-      // ===== DEBUG
-      // if (count % 100 === 0) {
-      //   clearLastLine();
-      //   console.log((count / nbOfIterations) * 100 + "% done");
-      // }
-      // count += 1;
-
-      for (
-        let j = sensorY - closestBeaconDistance;
-        j <= sensorY + closestBeaconDistance;
-        j++
-      ) {
-        const point = { id: "" + i + j, x: i, y: j };
-        if (
-          getManhattanDistance(point.x, point.y, sensorX, sensorY) <=
-          closestBeaconDistance
-        ) {
-          noBeaconPoints.push({ id: i + ";" + j, x: i, y: j });
-        }
-      }
-    }
     const sensor = {
-      id: sensorX + ";" + sensorY,
+      id: makePointId(sensorX, sensorY),
       x: sensorX,
       y: sensorY,
       closestBeacon: beacon,
       closestBeaconDistance,
-      noBeaconPoints,
     };
 
     // Update Zone data
@@ -161,13 +134,6 @@ function printZone(zone: Zone) {
         lineToPrint += BEACON;
       } else if (sensors.find((s) => s.x === i && s.y === j)) {
         lineToPrint += SENSOR;
-      } else if (
-        sensors
-          .map((s) => s.noBeaconPoints)
-          .flat()
-          .find((p) => p.x === i && p.y === j)
-      ) {
-        lineToPrint += NO_BEACON;
       } else {
         lineToPrint += AIR;
       }
@@ -176,39 +142,115 @@ function printZone(zone: Zone) {
   }
 }
 
+// For part 1
+// Return true if {x,y} is not spotted by the sensor as a "no beacon" point
+function canBeaconBeHere(x: number, y: number, sensor: Sensor): boolean {
+  const {
+    x: sensorX,
+    y: sensorY,
+    closestBeaconDistance,
+    closestBeacon,
+  } = sensor;
+  if (closestBeacon.x === x && closestBeacon.y === y) return true;
+  if (sensorX === x && sensorY === y) return false;
+  if (getManhattanDistance(x, y, sensorX, sensorY) <= closestBeaconDistance) {
+    return false;
+  }
+  return true;
+}
+
+// On a given row, get the min and max X values covered by the sensor
+function getMinAndMaxXWithoutBeacon(sensor: Sensor, rowNumber: number) {
+  const { x, y, closestBeaconDistance } = sensor;
+  const dY = Math.abs(rowNumber - y);
+  if (
+    rowNumber > y + closestBeaconDistance &&
+    rowNumber < y - closestBeaconDistance
+  ) {
+    return { min: -Infinity, max: Infinity };
+  }
+
+  /*  
+      m = minX, M = maxX, / and \ = sensor exclusion zone
+      0
+      |       . . . . . S . . . . . 
+      |       \ . . . dY| . . . . / 
+      |       . \ . . . | . . . / . 
+    rowNb     ____m_____|_____M____
+      |       . . . \ . . . / . . . 
+      |       . . . . \ . / . . . .
+      |       . . . . . - . . . . . 
+      V
+  */
+  return {
+    min: x - (closestBeaconDistance - dY),
+    max: x + (closestBeaconDistance - dY),
+  };
+}
+
 // Part 1 algo
 function getSolution1(zone: Zone, rowNumber: number): number {
-  const occupiedPoints: Point[] = [
-    ...zone.sensors.flatMap((s) => [
-      { id: s.id, x: s.x, y: s.y },
-      ...s.noBeaconPoints,
-    ]),
-  ];
-  const uniqueOccupiedPoints = removeDupplicates<Point>(occupiedPoints, "id");
-
-  return uniqueOccupiedPoints
-    .filter((p) => p.y === rowNumber)
-    .reduce((total, p) => (p.y === rowNumber ? (total += 1) : total), 0);
+  const { minX, maxX, sensors } = zone;
+  let count = 0;
+  for (let i = minX; i <= maxX; i++) {
+    for (const sensor of sensors) {
+      if (!canBeaconBeHere(i, rowNumber, sensor)) {
+        count += 1;
+        break;
+      }
+    }
+  }
+  return count;
 }
 
 // Part 2 algo
-function getSolution2(): string {
-  return "sol2";
+function getSolution2(zone: Zone, highLimit: number): number {
+  const { minX, maxX, minY, maxY, sensors } = zone;
+  const yMaxValue = Math.min(maxY, highLimit);
+  const xMaxValue = Math.min(maxX, highLimit);
+  console.log();
+  for (let j = Math.max(minY, 0); j <= yMaxValue; j++) {
+    displayProgressBar(j, yMaxValue);
+    const allRanges = [];
+    for (const sensor of sensors) {
+      const { min, max } = getMinAndMaxXWithoutBeacon(sensor, j);
+      // Clamp ranges from 0 to highLimit
+      if (min >= 0 || max <= highLimit) {
+        allRanges.push({
+          min: Math.max(min, 0),
+          max: Math.min(max, highLimit),
+        });
+      }
+    }
+
+    // Search x value not enclosed on allRanges
+    let i = 0;
+    while (i <= xMaxValue) {
+      const enclosingRange = allRanges.find((r) => r.min <= i && r.max >= i);
+      if (!enclosingRange) {
+        console.log("\nSolution 2 found:");
+        console.log(`x=${i} y=${j}`);
+        return i * 4000000 + j;
+      } else {
+        i = enclosingRange.max + 1;
+      }
+    }
+  }
+  return -1;
 }
 
 module.exports = async function solution(res: Response) {
   parseFiles(__dirname, (testDataArray, dataArray) => {
     // Parse data
     const test_data = parseData(testDataArray);
-    // const data = parseData(dataArray);
+    const data = parseData(dataArray);
+    let testSol1, testSol2, sol1, sol2;
 
     // Compute solutions
-    // const sol1 = getSolution1(data, 10);
-    // const sol2 = getSolution2(data);
-    const sol1 = "";
-    const sol2 = "";
-    const testSol1 = getSolution1(test_data, 10);
-    const testSol2 = "";
+    testSol1 = getSolution1(test_data, 10);
+    testSol2 = getSolution2(test_data, 20);
+    sol1 = getSolution1(data, 2000000);
+    sol2 = getSolution2(data, 4000000);
 
     // Render view
     res.render("solution", {
