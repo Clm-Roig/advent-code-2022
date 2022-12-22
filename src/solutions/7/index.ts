@@ -2,11 +2,11 @@ import { Response } from "express";
 import { basename } from "path";
 import getAvailableSolutions from "../../getAvailableSolutions";
 import { parseFiles } from "../utils";
-import TreeNode from "../TreeNode";
+import SimpleTreeNode from "../SimpleTreeNode";
 let errorMessage: string;
 
-const parseData = (dataArray: string[]): TreeNode<number> => {
-  const rootTree = new TreeNode("/", 0);
+const parseData = (dataArray: string[]): SimpleTreeNode<number> => {
+  const rootTree = new SimpleTreeNode("/", 0);
   // ignore first line since it's just moving to the root
   const [_, ...dataArrayWithoutFirstLine] = dataArray;
 
@@ -49,7 +49,7 @@ const parseData = (dataArray: string[]): TreeNode<number> => {
 };
 
 const getSmallDirectoriesTotal = (
-  tree: TreeNode<number>,
+  tree: SimpleTreeNode<number>,
   total: number
 ): number => {
   const THRESHOLD = 100000;
@@ -66,12 +66,12 @@ const getSmallDirectoriesTotal = (
 };
 
 // Part 1 algo
-function getSolution1(tree: TreeNode<number>): number {
+function getSolution1(tree: SimpleTreeNode<number>): number {
   return getSmallDirectoriesTotal(tree, 0);
 }
 
 // Part 2 algo
-function getSolution2(tree: TreeNode<number>): number {
+function getSolution2(tree: SimpleTreeNode<number>): number {
   const NEEDED_SPACE = 30000000;
   const TOTAL_SPACE = 70000000;
   const totalDiskSpace = tree.getTreeValue();

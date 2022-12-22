@@ -3,24 +3,24 @@ const getIndent = (indent?: string) => {
   else return "";
 };
 
-class TreeNode<T> {
-  children: Set<TreeNode<T>>;
-  parent?: TreeNode<T>;
+class SimpleTreeNode<T> {
+  children: Set<SimpleTreeNode<T>>;
+  parent?: SimpleTreeNode<T>;
   name: string;
   value: T;
 
-  constructor(name: string, value: T, parent?: TreeNode<T>) {
+  constructor(name: string, value: T, parent?: SimpleTreeNode<T>) {
     this.name = name;
     this.value = value;
     this.children = new Set();
     this.parent = parent;
   }
 
-  addNode(name: string, value: T): TreeNode<T> {
+  addNode(name: string, value: T): SimpleTreeNode<T> {
     // Add only if not already present
     let childNode = [...this.children].find((c) => c.name === name);
     if (!childNode) {
-      childNode = new TreeNode(name, value, this);
+      childNode = new SimpleTreeNode(name, value, this);
       this.children.add(childNode);
     }
     return childNode;
@@ -34,11 +34,14 @@ class TreeNode<T> {
   }
 
   getTreeValue(): number {
-    return this.getChildrenValue() + Number(this.value); // little hack about T <-> number
+    if (typeof this.value === "number") {
+      return this.getChildrenValue() + Number(this.value); // little hack about T <-> number
+    }
+    throw new Error("Method not available if T is not of type numbeR.");
   }
 
-  getAllNodesWithoutValue(nodes?: TreeNode<T>[]): TreeNode<T>[] {
-    const newNodes: TreeNode<T>[] = nodes ? nodes : [];
+  getAllNodesWithoutValue(nodes?: SimpleTreeNode<T>[]): SimpleTreeNode<T>[] {
+    const newNodes: SimpleTreeNode<T>[] = nodes ? nodes : [];
     if (this.value === 0) newNodes.push(this);
     for (const child of this.children) {
       const childNodes = child.getAllNodesWithoutValue(nodes);
@@ -70,4 +73,4 @@ class TreeNode<T> {
   }
 }
 
-export default TreeNode;
+export default SimpleTreeNode;
