@@ -1,31 +1,25 @@
 class ValveTreeNode {
   isOpen: boolean;
   value?: number;
-  parents: ValveTreeNode[];
-  children: ValveTreeNode[];
+  connectedToValves: ValveTreeNode[];
   name: string;
 
   constructor(name: string) {
     this.name = name;
     this.isOpen = false;
-    this.parents = [];
-    this.children = [];
+    this.connectedToValves = [];
   }
 
-  addParent(parent: ValveTreeNode) {
-    this.parents.push(parent);
-  }
-
-  addChild(child: ValveTreeNode) {
-    this.children.push(child);
-    child.addParent(this);
+  addConnection(child: ValveTreeNode) {
+    this.connectedToValves.push(child);
   }
 
   toString(): string {
     let res = `\n\n${this.name}`;
     res += ` (v=${this.value})`;
-    res += `\nParents=[${this.parents.map((p) => p.name).join(",")}]`;
-    res += `\nChildren=[${this.children.map((c) => c.name).join(",")}]`;
+    res += `\nConnected to=[${this.connectedToValves
+      .map((c) => c.name)
+      .join(",")}]`;
     return res;
   }
 }

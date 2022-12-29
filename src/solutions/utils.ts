@@ -87,3 +87,13 @@ export function displayProgressBar(j: number, maxValue: number) {
     process.stdout.write(`    |${"█".repeat(done)}${".".repeat(todo)}|`);
   }
 }
+
+export function createAndFillTwoDArray(
+  rows: number,
+  columns: number,
+  defaultValue: any
+){
+  return Array.from({ length:rows }, () => (
+      Array.from({ length:columns }, ()=> defaultValue)
+   ))
+}
